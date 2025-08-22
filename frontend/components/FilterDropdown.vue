@@ -1,22 +1,28 @@
 <template>
   <select
-    v-model="order"
+    v-model="filter"
     class="ps-1 px-3 text-wrapper inverted-input-box api-filter-select"
     aria-label="Filter"
     @change="orderApis"
   >
-    <option value="name" selected>Alphabetical</option>
+    <option value="name">Alphabetical</option>
     <option value="-likes_count">Likes</option>
   </select>
 </template>
 
 <script lang="ts" setup>
-const order = ref<string>("name");
+import { onMounted } from 'vue';
+import { useApiFilter } from "../composables/useApiFilter";
+const { filter } = useApiFilter();
 const emit = defineEmits(["filter:option"]);
 
 function orderApis() {
-  emit("filter:option", order.value);
+  emit("filter:option", filter.value);
 }
+
+onMounted(() => {
+  emit("filter:option", filter.value);
+});
 </script>
 
 <style scoped>

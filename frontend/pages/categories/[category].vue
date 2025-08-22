@@ -65,6 +65,7 @@
 </template>
 
 <script lang="ts" setup>
+import { watch } from 'vue';
 import { APIType } from "../../models/types";
 import ApivaultServices from "../../services/ApivaultServices";
 
@@ -117,9 +118,10 @@ const handleSearchCategory = (val: string, title: string) => {
 };
 
 /* Handle filter selection event */
-const filter = ref<string>();
+import { useApiFilter } from "../../composables/useApiFilter";
+const { filter } = useApiFilter();
 function handleFilterSelection(filterValue: string) {
-  filter.value = filterValue; 
+  filter.value = filterValue;
   fillApiCards(filter.value);
 }
 
@@ -144,9 +146,14 @@ async function fillApiCards(filter: string) {
   if (filter) { apiSearched.value = apiData.value };
 }
 
-onMounted(async () => {
-  await fillApiCards(filter.value!);
-});
+/* Re-fetch when category changes, keep same filter */
+watch(
+  () => route.params.category,
+  async () => {
+    await fillApiCards(filter.value!);
+  },
+  { immediate: true }
+);
 </script>
 
 <style scoped>
